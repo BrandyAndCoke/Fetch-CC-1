@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Data to Excel</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+</head>
+<body>
+    <button onclick="fetchWeatherData()">Generate Excel</button>
+
+    <script>
+        function fetchWeatherData() {
+            // Calculate date for the past month
+            var today = new Date();
+            var pastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+
+            // Format the date in the required format (e.g., YYYY-MM-DD)
+            var formattedPastMonth = pastMonth.toISOString().split('T')[0];
+
+            // API endpoint for weather data (replace with your actual API endpoint)
+            var apiUrl = "https://api.weather.com/data/2.5/weather?date=" + formattedPastMonth + "&appid=your_api_key";
+
+            // Make API call
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Assume the API response contains Excel data
+                    var excelData = data.excelData;
+
+                    // Create Excel workbook
+                    var wb = XLSX.utils.book_new();
+                    var ws = XLSX.utils.aoa_to_sheet(excelData);
+
+                    // Add worksheet to workbook
+                    XLSX.utils.book_append_sheet(wb, ws, "Weather_Data");
+
+                    // Save workbook as Excel file
+                    XLSX.writeFile(wb, "weather_data.xlsx");
+                })
+                .catch(error => console.error('Error fetching weather data:', error));
+        }
+    </script>
+</body>
+</html>
